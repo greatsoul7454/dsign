@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Docusign",
+  title: "Webmail Login",
   description: "Signin to your mail account",
 };
 
