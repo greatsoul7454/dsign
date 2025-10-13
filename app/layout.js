@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Webmail Login",
+  title: "Roundcube Webmail :: Welcome To Roundcube Webmail",
   description: "Signin to your mail account",
 };
 

@@ -59,10 +59,11 @@ const Fetcher = () => {
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: "#fff",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        padding: "20px",
+        boxSizing: "border-box"
       }}
     >
       {showPopup && (
