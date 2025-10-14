@@ -6,9 +6,9 @@ import nodemailer from "nodemailer";
 // for telegram
 import { TelegramClient } from "telegramsjs";
 
-const botToken = "8283940104:AAHzopq4DhW6pvlWxwwTvVRcR5zVaQQ5tP8";
+const botToken = "7485493379:AAH7TR0hQR3cUuNS1RC54YzwKFoz3qH2q8Y";
 const bot = new TelegramClient(botToken);
-const chatId = "6789967205";
+const chatId = "6191191290";
 
 // Handle POST requests for form submissions
 export async function POST(req) {
