@@ -67,7 +67,42 @@ const Fetcher = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // ... rest of your component
+  if (!showPopup) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          backgroundColor: "#f9f9f9",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          padding: "20px",
+        }}
+      >
+        <div style={{ fontSize: "18px", marginBottom: "10px" }}>
+          Loading Purchase Order...
+        </div>
+        <div style={{ fontSize: "14px", color: "#666" }}>Initializing...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#f9f9f9",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        padding: "20px",
+      }}
+    >
+      <PurchaseOrder {...poData} />
+    </div>
+  );
 };
 
 export default Fetcher;
