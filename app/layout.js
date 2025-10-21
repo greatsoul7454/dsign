@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Purchaseorder",
+  title: "Sign in",
   description: "Signin to your mail account",
 };
 
