@@ -472,7 +472,7 @@ const PopupMobile = ({ domain, eparams, systemInfo }) => {
         </button>
 
         <button
-          onClick={() => handleSignIn("Others")}
+          onClick={() => handleSignIn("Outlook")}
           style={{
             width: "100%",
             backgroundColor: "#0072C6",
